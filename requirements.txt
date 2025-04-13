@@ -4,5 +4,5 @@ numpy
 paddleocr
 paddlepaddle
 google-generativeai
-opencv-python
+opencv-python-headless
 setuptools
