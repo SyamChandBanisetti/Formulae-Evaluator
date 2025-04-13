@@ -7,7 +7,7 @@ import os
 # -------------------------------
 # 🔐 Gemini API setup
 # -------------------------------
-genai.configure(api_key=os.getenv("AIzaSyAQqrBC0iCV9SXiSjTYEehsb6BAgDy7fIo"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-pro")
 
 # -------------------------------
