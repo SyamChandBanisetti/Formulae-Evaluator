@@ -1,6 +1,7 @@
-streamlit
 paddleocr
 paddlepaddle
-numpy
-Pillow
 google-generativeai
+streamlit
+Pillow
+numpy
+setuptools
