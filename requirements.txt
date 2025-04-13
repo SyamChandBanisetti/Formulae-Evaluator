@@ -1,8 +1,5 @@
 streamlit
 pillow
 numpy
-paddleocr
-paddlepaddle
+pytesseract
 google-generativeai
-opencv-python-headless
-setuptools
