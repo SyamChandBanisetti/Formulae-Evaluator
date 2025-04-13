@@ -13,7 +13,7 @@ Upload an image of your confusion matrix evaluation formulas (Accuracy, Precisio
 ## 💻 Run Locally
 
 ```bash
-git clone https://github.com/yourusername/ml-evaluator-app.git
-cd ml-evaluator-app
-pip install -r requirements.txt
+git add requirements.txt
+git commit -m "Fix: use opencv-python-headless for Streamlit compatibility"
+git push
 streamlit run app.py
