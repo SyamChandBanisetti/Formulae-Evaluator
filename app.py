@@ -1,35 +1,23 @@
 import streamlit as st
 from PIL import Image
-import numpy as np
-from paddleocr import PaddleOCR
+import pytesseract
 import google.generativeai as genai
 import os
 
 # -------------------------------
-# 🔐 Setup Gemini API
+# 🔐 Gemini API setup
 # -------------------------------
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))  # Set via environment or manually below
-
-# OPTIONAL: If you're not using environment variable, uncomment this:
-genai.configure(api_key="AIzaSyAQqrBC0iCV9SXiSjTYEehsb6BAgDy7fIo")
-
+genai.configure(api_key=os.getenv("AIzaSyAQqrBC0iCV9SXiSjTYEehsb6BAgDy7fIo"))
 model = genai.GenerativeModel("gemini-pro")
 
 # -------------------------------
-# 📷 OCR: Extract text from image
+# 📷 OCR using Tesseract
 # -------------------------------
-ocr = PaddleOCR(use_angle_cls=True, lang='en')
-
 def extract_text_from_image(img: Image.Image) -> str:
-    img_np = np.array(img)
-    result = ocr.ocr(img_np, cls=True)
-    extracted = ""
-    for line in result[0]:
-        extracted += line[1][0] + "\n"
-    return extracted.strip()
+    return pytesseract.image_to_string(img)
 
 # -------------------------------
-# 🧠 Gemini Evaluation
+# 🧠 Gemini AI evaluation
 # -------------------------------
 def evaluate_with_gemini(extracted_text: str) -> dict:
     prompt = f"""
@@ -56,36 +44,34 @@ Return the result in this JSON format:
   "total": sum of above
 }}
 """
-
     response = model.generate_content(prompt)
     try:
         import json
-        result = json.loads(response.text)
-        return result
-    except Exception as e:
+        return json.loads(response.text)
+    except Exception:
         return {"error": "Gemini returned unexpected format", "details": response.text}
 
 # -------------------------------
 # 🎛️ Streamlit UI
 # -------------------------------
 st.set_page_config(page_title="ML Formula Evaluator", layout="centered")
-st.title("🧪 ML Confusion Matrix Formula Evaluator")
+st.title("📊 ML Confusion Matrix Formula Evaluator")
 
-st.markdown("Upload an image of your formulas for **Accuracy**, **Precision**, **Recall**, and **F1-score**. This app will evaluate your formulas using OCR and Gemini AI.")
+st.markdown("Upload an image of your formulas for Accuracy, Precision, Recall, and F1-score. This app will extract and evaluate them using Gemini AI.")
 
-uploaded_file = st.file_uploader("Upload image", type=["png", "jpg", "jpeg"])
+uploaded_file = st.file_uploader("Upload your image", type=["png", "jpg", "jpeg"])
 
 if uploaded_file is not None:
     img = Image.open(uploaded_file)
     st.image(img, caption="Uploaded Image", use_container_width=True)
 
-    with st.spinner("🔍 Extracting formulas using OCR..."):
+    with st.spinner("🔍 Extracting text..."):
         extracted_text = extract_text_from_image(img)
 
-    st.subheader("📜 Extracted Text")
+    st.subheader("📄 Extracted Text")
     st.code(extracted_text)
 
-    with st.spinner("🧠 Evaluating using Gemini AI..."):
+    with st.spinner("🤖 Evaluating with Gemini AI..."):
         result = evaluate_with_gemini(extracted_text)
 
     if "error" in result:
@@ -93,6 +79,6 @@ if uploaded_file is not None:
         st.text(result["details"])
     else:
         st.success(f"✅ Total Score: {result['total']}/5")
-        st.write("### Detailed Breakdown")
+        st.write("### Breakdown")
         for k in ["accuracy", "precision", "recall", "f1_score", "formatting"]:
-            st.write(f"**{k.replace('_', ' ').capitalize()}**: {result[k]}/1")
+            st.write(f"**{k.replace('_', ' ').title()}**: {result[k]}/1")
