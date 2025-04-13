@@ -1,3 +1,6 @@
 streamlit
-pytesseract
+paddleocr
+paddlepaddle
+numpy
 Pillow
+google-generativeai
